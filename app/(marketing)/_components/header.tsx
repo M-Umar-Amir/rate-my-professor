@@ -1,4 +1,6 @@
 import { Button } from '@/components/ui/button'
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
+import Link from 'next/link'
 import React from 'react'
 
 export const Header = () => {
@@ -7,12 +9,21 @@ export const Header = () => {
         <div className='flex items-center justify-between w-full py-4 px-8'>
         <h1 className='text-xl font-semibold'>Rate My Professor</h1>
         <div className='flex gap-4 items-center'>
-            <Button className="">
-                Login
+        <SignedOut>
+            <Button>
+              <Link href="/sign-up">
+              Sign Up
+              </Link>
             </Button>
-            <Button className="">
-                Sign Up
+            <Button>
+              <Link href="/sign-in">
+              Sign In
+              </Link>
             </Button>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
         </div>
     </div>
