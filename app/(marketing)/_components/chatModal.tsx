@@ -74,9 +74,85 @@ export const ChatModal = () => {
  */
 
 'use client';
+/* "use client";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import React, { useState } from "react";
+import { ChatBubble } from "./chatBubble";
+
+export const ChatModal = () => {
+  const [messages, setMessages] = useState([
+    { id: 1, text: "Hi, how can I help you?", isUser: false },
+    { id: 2, text: "I have a question about your service.", isUser: true },
+    { id: 3, text: "Sure, what would you like to know?", isUser: false },
+  ]);
+
+  const [newMessage, setNewMessage] = useState("");
+
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+      setMessages([
+        ...messages,
+        { id: messages.length + 1, text: newMessage, isUser: true },
+      ]);
+      setNewMessage("");
+    }
+  };
+  return (
+    <Dialog>
+      <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90">
+        Chat with our Ai
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Find the Prof by chatting with the Ai</DialogTitle>
+          <DialogDescription>
+            <div className="p-4 bg-gray-100 rounded-lg max-w-lg mx-auto flex flex-col h-[80vh]">
+              <div className="flex-grow overflow-y-auto mb-4">
+                {messages.map((message) => (
+                  <ChatBubble
+                    key={message.id}
+                    message={message.text}
+                    isUser={message.isUser}
+                  />
+                ))}
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="flex-grow p-2 rounded-l-lg border border-gray-300 focus:outline-none"
+                  placeholder="Type your message..."
+                />
+                <button
+                  onClick={handleSendMessage}
+                  className="p-2 bg-black text-white rounded-r-lg"
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  );
+};
+ */
+
+'use client';
 import React, { useState } from 'react';
-import { ChatBubble } from './chatBubble';
 import axios from 'axios';
+import { ChatBubble } from './chatBubble';
 
 export const ChatModal = () => {
   const [messages, setMessages] = useState([
@@ -97,28 +173,21 @@ export const ChatModal = () => {
       ]);
 
       try {
-        // Generate embeddings for the user's message using OpenAI
+        // Generate embeddings for the user's message using Hugging Face API
         const openaiResponse = await axios.post(
-          'https://api.openai.com/v1/embeddings',
+          'https://expert-space-funicular-qrj47jp4p9gf45pj-5000.app.github.dev/embeddings', // URL of your Flask API
           {
-            model: 'text-embedding-3-small',
-            input: newMessage,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
+            texts: [newMessage],
           }
         );
 
-        const embedding = openaiResponse.data.data[0].embedding;
+        const embedding = openaiResponse.data.embeddings[0];
 
-        console.log(embedding)
+        console.log('Generated embedding:', embedding);
 
-        // Query Pinecone for the best match based on the embedding using Axios
+        // Query Pinecone for the best match based on the embedding
         const pineconeResponse = await axios.post(
-          'https://rag-9orfnpj.svc.aped-4627-b74a.pinecone.io/query', // Replace with your actual Pinecone URL
+          'https://prof-zteensq.svc.aped-4627-b74a.pinecone.io/query', // Replace with your Pinecone URL
           {
             topK: 10,
             vector: embedding,
@@ -126,17 +195,17 @@ export const ChatModal = () => {
           },
           {
             headers: {
-              'Api-Key': process.env.PINECONE_API_KEY,
+              'Api-Key': '0a08e41d-3496-4ed7-ab13-cc523e053940',
               'Content-Type': 'application/json',
             },
           }
         );
 
         const bestMatch =
-          pineconeResponse.data.matches[0]?.metadata?.text ||
+          pineconeResponse.data.matches[0].values.toString() ||
           "Sorry, I couldn't find an answer.";
 
-          console.log(pineconeResponse)
+        console.log('Pinecone response:', pineconeResponse.data.matches[0].values.toString());
 
         // Add the AI's response to the chat
         setMessages((prevMessages) => [
