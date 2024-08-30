@@ -106,7 +106,7 @@ export const ChatModal = () => {
           },
           {
             headers: {
-              Authorization: `Bearer sk-proj-cI3nyiBec0Km7NSAcMS2T3BlbkFJStuXiy6CH7Z2uKszSzQJ`,
+              Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
               'Content-Type': 'application/json',
             },
           }
@@ -126,7 +126,7 @@ export const ChatModal = () => {
           },
           {
             headers: {
-              'Api-Key': 'ff58b24c-bd7c-4113-943a-7c9b74f930fe',
+              'Api-Key': process.env.PINECONE_API_KEY,
               'Content-Type': 'application/json',
             },
           }
